@@ -1,2 +1,2 @@
 # heis
-Dette er en testting
+Dette er en dum test
