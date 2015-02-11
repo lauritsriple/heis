@@ -5,6 +5,7 @@
 
 static int state=0; // undefined state
 static int currentFloor;
+static elev_motor_direction_t currentDirection;
 
 void fsm_init(){
  	queue_init();
@@ -51,13 +52,14 @@ void fsm_evButtonOrderFloorPressed(int floor){
 //get next floor from queue
 }
 
-void fsm_evIsFloor(int currentFloor){
+void fsm_evIsFloor(int currentFloor, elev_motor_direction_t currentDirection){
 	elev_set_floor_indicator(currentFloor);
-	if(currentFloor-queue_getNextFloor()<0){
+
+	if(currentFloor-queue_getNextFloor(currentFloot,currentDirection)<0){
 		elev_set_motor_direction(DIRN_UP);
 		queue_pop();
 	}
-	else if(currentFloor-queue_getNextFloor()>0){	
+	else if(currentFloor-queue_getNextFloor(currentFloot,currentDirection)>0){	
 		elev_set_motor_direction(DIRN_DOWN);
 		queue_pop();
 	}
@@ -74,16 +76,18 @@ void fsm_evIsFloor(int currentFloor){
 }
 
 void fsm_evIsTimeout(){
-	if(timer_isTimeout()){
-		queue_getNextFloor();
-		elev_set_door_open_lamp(0);
-						
-		
+	queue_getNextFloor();
+	elev_set_door_open_lamp(0);
+	if (currentDirection != DIRN_STOP) {
+		elev_set_motor_direction(currentDirection);
+	}
+//get next floor
+//close door
+//start motor					
 }
-get next floor
-close door
-start motor
-}
+
+
+
 
 void fsm_evStopUnpressed(){
 if in floor, start timer
