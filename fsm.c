@@ -14,7 +14,7 @@ void fsm_init(){
 	}
 
 //start motor up to find defined state.
-//initialize queue	
+//initialize queue
 }
 
 void fsm_evStopPressed(){
@@ -36,7 +36,7 @@ void fsm_evButtonUpDownPressed(int floor, elev_button_type_t button){
 	if(elev_get_button_signal(button, floor)){
 		queue_add(floor, button);
 		elev_set_button_lamp(button, floor, 1);
-		
+
 	}
 //add pressed button to queue
 //get next floor from queue
@@ -52,24 +52,17 @@ void fsm_evButtonOrderFloorPressed(int floor){
 //get next floor from queue
 }
 
-void fsm_evIsFloor(int currentFloor, elev_motor_direction_t currentDirection){
+void fsm_evIsFloor(int floor){
+	currentFloor=floor;
 	elev_set_floor_indicator(currentFloor);
 
-	if(currentFloor-queue_getNextFloor(currentFloot,currentDirection)<0){
-		elev_set_motor_direction(DIRN_UP);
-		queue_pop();
-	}
-	else if(currentFloor-queue_getNextFloor(currentFloot,currentDirection)>0){	
-		elev_set_motor_direction(DIRN_DOWN);
-		queue_pop();
-	}
-	else{
+	if (queue_getNextFloor(currentFloor, currentDirection)==currentFloor){
 		elev_set_motor_direction(DIRN_STOP);	//correct floor reached
 		elev_set_door_open_lamp(1);
 		timer_start();
 	}
 //set floor light
-//stop motor if queue next floor 
+//stop motor if queue next floor
 //set open door light
 //start timer
 
@@ -78,12 +71,24 @@ void fsm_evIsFloor(int currentFloor, elev_motor_direction_t currentDirection){
 void fsm_evIsTimeout(){
 	queue_getNextFloor();
 	elev_set_door_open_lamp(0);
-	if (currentDirection != DIRN_STOP) {
-		elev_set_motor_direction(currentDirection);
+	if (queue_getNextFloor(currentFloor,currentDirection)==currentFloor) {
+		elev_set_motor_direction(DIRN_STOP);
+		currentDirection=DIRN_STOP;
+	}
+
+	else if  (currentFloor-queue_getNextFloor(currentFloor,currentDirection)<0){
+		elev_set_motor_direction(DIRN_UP);
+		currentDirection=DIRN_UP;
+                queue_pop(currentFloor);
+        }
+        else if(currentFloor-queue_getNextFloor(currentFloor,currentDirection)>0){
+                elev_set_motor_direction(DIRN_DOWN);
+		currentDirection=DIRN_DOWN;
+                queue_pop(currentFloor);
 	}
 //get next floor
 //close door
-//start motor					
+//start motor
 }
 
 
