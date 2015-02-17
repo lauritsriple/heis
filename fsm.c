@@ -2,6 +2,8 @@
 #include "heisdriver/elev.h"
 #include "queue.h"
 #include "timer.h"
+#include "fsm.h"
+#include "elev.h"
 
 static int currentFloor;
 static elev_motor_direction_t currentDirection;

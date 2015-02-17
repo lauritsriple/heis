@@ -1,4 +1,7 @@
 /*** #file "queue.c" ***/
+#include "queue.h"
+#include "elev.h"
+
 
 #include "heisdriver/elev.h"
 
