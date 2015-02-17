@@ -1,4 +1,4 @@
-/*** #file "fsm.c" ***/
+/*** #file "main.c" ***/
 
 #include "heisdriver/elev.h"
 #include "fsm.h"
