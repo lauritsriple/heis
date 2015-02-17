@@ -2,6 +2,9 @@
 
 #include "heisdriver/elev.h"
 #include "fsm.h"
+#include "elev.h"
+#include "timer.h"
+
 
 int main (void) {
 	fsm_init()
