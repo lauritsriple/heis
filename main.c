@@ -16,17 +16,17 @@ int main (void) {
 			for (int j = 0; j < 4; j++){
 				if ((j<3)&&(i==0)){ //BUTTON_CALL_UP
 					if (elev_get_button_signal((elev_button_type_t)i,j)){
-						fsm_evButtonUpDownPressed(j,(elev_button_type_t)i);
+						fsm_evButton(j,(elev_button_type_t)i);
 					}
 				}
 				if ((j>0)&&(i==1)){ //BUTTON_CALL_DOWN
 					if (elev_get_button_signal((elev_button_type_t)i,j)){
-                                                fsm_evButtonUpDownPressed(j,(elev_button_type_t)i);
+                                                fsm_evButton(j,(elev_button_type_t)i);
                                         }
 				}
 				if (i==2){ //BUTTON_COMMAND
 					if(elev_get_button_signal((elev_button_type_t)i,j)){
-						fsm_evButtonOrderFloorPressed(j,(elev_button_type_t)i);
+						fsm_evButton(j,(elev_button_type_t)i);
 					}
 				}
 			}
