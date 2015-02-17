@@ -8,7 +8,7 @@ int main (void) {
 	while(true){
 		// FLOOR REACHED
 		if (elev_get_floor_sensor_signal()!=-1){
-			fsm_isFloor(elev_get_floor_sensor_signal());
+			fsm_evIsFloor(elev_get_floor_sensor_signal());
 		}
 
 		//ORDERBUTTON PRESSED
