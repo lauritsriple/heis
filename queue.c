@@ -1,5 +1,13 @@
 /*** #file "queue.c" ***/
 
+#include "heisdriver/elev.h"
+
+typedef struct {
+	int upDir[N_FLOORS];
+        int downDir[N_FLOORS];
+        int noDir[N_FLOORS];
+} Queue_t; 
+
 void queue_init(){
 	Queue_t queue;
 	for (int i=0; i<N_FLOORS ; i++){
@@ -10,7 +18,7 @@ void queue_init(){
 }
 
 void queue_add(int floor, elev_button_type_t button){
-	switch (button) {
+	switch (button) { //Muligens caste? Enum? Sjekk kompilator
 		case BUTTON_CALL_UP:
 			if (queue.upDir[floor] == 0){
 				queue.upDir[floor]=1;
@@ -54,7 +62,7 @@ void queue_delete(){
 }
 
 int queue_getNextFloor(int currentFloor, elev_motor_direction_t currentDirection){
-	switch (currentDirection){
+	switch (currentDirection){ //Switch case lovlig? ENUM
 		case DIRN_STOP: //i ro
 			for (int i =0; i<N_FLOORS;i++){ //if "i ro", muligens en bestilling.
 				if (queue.upDir[i]){
@@ -70,7 +78,7 @@ int queue_getNextFloor(int currentFloor, elev_motor_direction_t currentDirection
 			return currentFloor;
 
 		case DIRN_DOWN: // nedover
-			for (int i = 1; i < currentFloor; i++){
+			for (int i = currentfloor; i < 0; i--){
 				if (downDir[i]==1){
 					return i;
 				}
