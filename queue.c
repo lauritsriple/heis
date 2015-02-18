@@ -2,6 +2,7 @@
 
 #include "queue.h"
 #include "elev.h"
+#include <stdio.h>
 
 typedef struct {
 	int upDir[N_FLOORS];
@@ -39,6 +40,9 @@ void queue_add(int floor, elev_button_type_t button){
 			}
 			break;
 	}
+	
+	printf("QUEUE ADD, int floor = %d, button = %d :\n",floor,button);
+	queue_print();
 
 }
 
@@ -53,6 +57,8 @@ void queue_pop(int floor){
 	if (queue.noDir[floor] == 1){
 		queue.noDir[floor]=0;
 	}
+	printf("QUEUE POP, int floor = %d:\n",floor);
+	queue_print();
 }
 
 void queue_delete(){
@@ -61,54 +67,107 @@ void queue_delete(){
 		queue.downDir[i]=0;
 		queue.noDir[i]=0;
 	}
+	
+	printf("QUEUE DELETE");
+	queue_print();
 }
 
 int queue_getNextFloor(int currentFloor, elev_motor_direction_t currentDirection){
+	printf("getNextFloor, currentfloor = %d, currentdirection = %d\n",currentFloor,currentDirection)
 	switch (currentDirection){
 		case DIRN_STOP: //i ro
 			for (int i =0; i<N_FLOORS;i++){ //if "i ro", muligens en bestilling.
 				if (queue.upDir[i]){
+					printf("getNextFloor returns %i",i);
+					printf("\n")
 					return i;
 				}
 				if (queue.downDir[i]){
+					printf("getNextFloor returns %i",i);
+					printf("\n")
 					return i;
 				}
 				if (queue.noDir[i]){
+					printf("getNextFloor returns %i",i);
+					printf("\n")
 					return i;
 				}
 			}
+			printf("getNextFloor returns %i",currentFloor);
+			printf("\n")
 			return currentFloor;
 
 		case DIRN_DOWN: // nedover
 			for (int i = currentFloor; i < 0; i--){
 				if (queue.downDir[i]==1){
+					printf("getNextFloor returns %i",i);
+					printf("\n")
 					return i;
 				}
 			}
 		case DIRN_UP: //oppover
 			for (int i = currentFloor; i < N_FLOORS-1; i++){
 				if (queue.upDir[i]==1){
+					printf("getNextFloor returns %i",i);
+					printf("\n")
 					return i;
 				}
 			}
 		default:
+			printf("getNextFloor returns DEFAULT = -1");
+			printf("\n")
 			return -1;
 	}
+	
 }
 
 elev_motor_direction_t queue_getNextDirection(int currentFloor, elev_motor_direction_t currentDirection){
 	int nextFloor=queue_getNextFloor(currentFloor,currentDirection);
 	if (nextFloor==-1){
+		printf("getNextDirection BREAKS, return DIRN_STOP");
+		printf("\n")
 		return DIRN_STOP;
 	}
 	int diff=currentFloor-nextFloor;
 	if (diff > 0) {
+		printf("getNextDirection returns DIRN_DOWN");
+		printf("\n")
 		return DIRN_DOWN;
 	}
 	else if (diff < 0) {
 		return DIRN_UP;
+		printf("getNextDirection returns DIRN_UP");
+		printf("\n")
 	}
 	else {
 		return DIRN_STOP;
+		printf("getNextDirection returns DIRN_STOP");
+		printf("\n")
 	}
+}
+
+void queue_print (){
+	printf("\n")
+	printf ("FlOOR:\t");
+	for ( int i = 0 ; i < 4 ; i++ ) {
+		printf(i+1);
+	}
+	
+	printf("UP:\t");
+	for ( int i = 0 ; i < 4 ; i++ ) {
+		printf(queue.upDir[i]);
+	}
+	printf("\n");
+	
+	printf("DOWN:\t")
+	for ( int i = 0 ; i < 4 ; i++ ) {
+		printf(queue.downDir[i]);
+	}
+	printf("\n");
+	printf("Innside:\t");
+	for ( int i = 0 ; i < 4 ; i++ ) {
+		printf(queue.noDir[i]);
+	}
+	printf("\n");
+	printf("\n")
 }

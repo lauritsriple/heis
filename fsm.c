@@ -21,8 +21,8 @@ void fsm_evStopPressed(){
 	elev_set_motor_direction(DIRN_STOP);
 	currentDirection=DIRN_STOP;
 	elev_set_stop_lamp(1);
-	queue_delete();
-	//SET ORDER LAMPS
+
+	//Turn off order lamps
 	for (int i = 0 ; i < 3; i++){ //iterator for button types
 		for (int j = 0; j<N_FLOORS; j++){
                 	if ((j<N_FLOORS-1)&&(i==0)){ //BUTTON_CALL_UP
@@ -50,6 +50,7 @@ void fsm_evStopPressed(){
 		}
 	}
 	elev_set_stop_lamp(0);
+	queue_delete();
 
 }
 
