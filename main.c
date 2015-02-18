@@ -4,7 +4,6 @@
 #include "fsm.h"
 #include "timer.h"
 #include <unistd.h> // for usleep
-#include <stdio.h> // for printf
 
 int main (void) {
 	elev_init();
@@ -46,7 +45,7 @@ int main (void) {
 			fsm_evIsTimeout();
 		}
 
-		usleep(10000);
+		//usleep(10000);
 	}
 }
 
