@@ -8,3 +8,5 @@ void timer_stop();
 int timer_isTimeout();
 
 #endif
+
+/*** End of file ***/

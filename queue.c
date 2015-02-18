@@ -20,7 +20,7 @@ void queue_init(){
 }
 
 void queue_add(int floor, elev_button_type_t button){
-	switch (button) { //Muligens caste? Enum? Sjekk kompilator
+	switch (button) {
 		case BUTTON_CALL_UP:
 			if (queue.upDir[floor] == 0){
 				queue.upDir[floor]=1;
@@ -64,7 +64,7 @@ void queue_delete(){
 }
 
 int queue_getNextFloor(int currentFloor, elev_motor_direction_t currentDirection){
-	switch (currentDirection){ //Switch case lovlig? ENUM
+	switch (currentDirection){
 		case DIRN_STOP: //i ro
 			for (int i =0; i<N_FLOORS;i++){ //if "i ro", muligens en bestilling.
 				if (queue.upDir[i]){
@@ -97,8 +97,12 @@ int queue_getNextFloor(int currentFloor, elev_motor_direction_t currentDirection
 }
 
 elev_motor_direction_t queue_getNextDirection(int currentFloor, elev_motor_direction_t currentDirection){
-	int diff=currentFloor-queue_getNextFloor(currentFloor, currentDirection);
-	if (diff > 0 || queue_getNextFloor(currentFloor, currentDirection)==-1) {
+	int nextFloor=queue_getNextFloor(currentFloor,currentDirection);
+	if (nextFloor==-1){
+		return DIRN_STOP;
+	}
+	int diff=currentFloor-nextFloor;
+	if (diff > 0) {
 		return DIRN_DOWN;
 	}
 	else if (diff < 0) {

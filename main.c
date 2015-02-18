@@ -3,12 +3,13 @@
 #include "elev.h"
 #include "fsm.h"
 #include "timer.h"
-#include <stdbool.h>
-
+#include <unistd.h> // for usleep
+#include <stdio.h> // for printf
 
 int main (void) {
+	elev_init();
 	fsm_init();
-	while(true){
+	while(1){
 		// FLOOR REACHED
 		if (elev_get_floor_sensor_signal()!=-1){
 			fsm_evIsFloor(elev_get_floor_sensor_signal());
@@ -45,9 +46,8 @@ int main (void) {
 			fsm_evIsTimeout();
 		}
 
+		usleep(10000);
 	}
-
-
 }
 
-main();
+/*** End of file ***/
