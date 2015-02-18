@@ -1,18 +1,17 @@
 /*** #file "queue.c" ***/
+
 #include "queue.h"
 #include "elev.h"
-
-
-#include "heisdriver/elev.h"
 
 typedef struct {
 	int upDir[N_FLOORS];
         int downDir[N_FLOORS];
         int noDir[N_FLOORS];
-} Queue_t; 
+} Queue_t;
+
+static Queue_t queue; 
 
 void queue_init(){
-	Queue_t queue;
 	for (int i=0; i<N_FLOORS ; i++){
 		queue.upDir[i]=0;
 		queue.downDir[i]=0;
@@ -52,7 +51,7 @@ void queue_pop(int floor){
 		queue.downDir[floor]=0;
 	}
 	if (queue.noDir[floor] == 1){
-		queue.noDir[floor]=0
+		queue.noDir[floor]=0;
 	}
 }
 
@@ -81,23 +80,25 @@ int queue_getNextFloor(int currentFloor, elev_motor_direction_t currentDirection
 			return currentFloor;
 
 		case DIRN_DOWN: // nedover
-			for (int i = currentfloor; i < 0; i--){
-				if (downDir[i]==1){
+			for (int i = currentFloor; i < 0; i--){
+				if (queue.downDir[i]==1){
 					return i;
 				}
 			}
 		case DIRN_UP: //oppover
 			for (int i = currentFloor; i < N_FLOORS-1; i++){
-				if (upDir[i]==1){
+				if (queue.upDir[i]==1){
 					return i;
 				}
 			}
+		default:
+			return -1;
 	}
 }
 
 elev_motor_direction_t queue_getNextDirection(int currentFloor, elev_motor_direction_t currentDirection){
-	int diff=currentFloor-queue_getNextFloor(currentFloor, currentDirection)
-	if (diff > 0) {
+	int diff=currentFloor-queue_getNextFloor(currentFloor, currentDirection);
+	if (diff > 0 || queue_getNextFloor(currentFloor, currentDirection)==-1) {
 		return DIRN_DOWN;
 	}
 	else if (diff < 0) {

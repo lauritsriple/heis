@@ -3,6 +3,7 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
+#import "elev.h"
 
 void queue_init();
 
@@ -13,5 +14,7 @@ void queue_pop(int floor);
 void queue_delete();
 
 int queue_getNextFloor();
+
+elev_motor_direction_t queue_getNextDirection(int currentFloor, elev_motor_direction_t currentDirection);
 
 #endif

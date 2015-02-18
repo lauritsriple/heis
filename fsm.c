@@ -1,9 +1,9 @@
 /*** #file "fsm.c" ***/
-#include "heisdriver/elev.h"
+
+#include "elev.h"
 #include "queue.h"
 #include "timer.h"
 #include "fsm.h"
-#include "elev.h"
 
 static int currentFloor;
 static elev_motor_direction_t currentDirection;
@@ -39,7 +39,7 @@ void fsm_evButton(int floor, elev_button_type_t button){
 	queue_add(floor, button);
 	elev_set_button_lamp(button, floor, 1);
 	if (currentDirection==DIRN_STOP) { //if empty queue
-                elev_set_motor_direction(queue_getNextDirection(currentFloor,currentDirection);
+                elev_set_motor_direction(queue_getNextDirection(currentFloor,currentDirection));
         }
 }
 

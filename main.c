@@ -1,13 +1,13 @@
 /*** #file "main.c" ***/
 
-#include "heisdriver/elev.h"
-#include "fsm.h"
 #include "elev.h"
+#include "fsm.h"
 #include "timer.h"
+#include <stdbool.h>
 
 
 int main (void) {
-	fsm_init()
+	fsm_init();
 	while(true){
 		// FLOOR REACHED
 		if (elev_get_floor_sensor_signal()!=-1){
@@ -49,3 +49,5 @@ int main (void) {
 
 
 }
+
+main();
