@@ -17,4 +17,6 @@ int queue_getNextFloor();
 
 elev_motor_direction_t queue_getNextDirection(int currentFloor, elev_motor_direction_t currentDirection);
 
+void queue_print();
+
 #endif

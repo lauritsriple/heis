@@ -73,35 +73,35 @@ void queue_delete(){
 }
 
 int queue_getNextFloor(int currentFloor, elev_motor_direction_t currentDirection){
-	printf("getNextFloor, currentfloor = %d, currentdirection = %d\n",currentFloor,currentDirection)
+	printf("getNextFloor, currentfloor = %d, currentdirection = %d\n",currentFloor,currentDirection);
 	switch (currentDirection){
 		case DIRN_STOP: //i ro
 			for (int i =0; i<N_FLOORS;i++){ //if "i ro", muligens en bestilling.
 				if (queue.upDir[i]){
 					printf("getNextFloor returns %i",i);
-					printf("\n")
+					printf("\n");
 					return i;
 				}
 				if (queue.downDir[i]){
 					printf("getNextFloor returns %i",i);
-					printf("\n")
+					printf("\n");
 					return i;
 				}
 				if (queue.noDir[i]){
 					printf("getNextFloor returns %i",i);
-					printf("\n")
+					printf("\n");
 					return i;
 				}
 			}
 			printf("getNextFloor returns %i",currentFloor);
-			printf("\n")
+			printf("\n");
 			return currentFloor;
 
 		case DIRN_DOWN: // nedover
 			for (int i = currentFloor; i < 0; i--){
 				if (queue.downDir[i]==1){
 					printf("getNextFloor returns %i",i);
-					printf("\n")
+					printf("\n");
 					return i;
 				}
 			}
@@ -109,13 +109,13 @@ int queue_getNextFloor(int currentFloor, elev_motor_direction_t currentDirection
 			for (int i = currentFloor; i < N_FLOORS-1; i++){
 				if (queue.upDir[i]==1){
 					printf("getNextFloor returns %i",i);
-					printf("\n")
+					printf("\n");
 					return i;
 				}
 			}
 		default:
 			printf("getNextFloor returns DEFAULT = -1");
-			printf("\n")
+			printf("\n");
 			return -1;
 	}
 	
@@ -125,49 +125,49 @@ elev_motor_direction_t queue_getNextDirection(int currentFloor, elev_motor_direc
 	int nextFloor=queue_getNextFloor(currentFloor,currentDirection);
 	if (nextFloor==-1){
 		printf("getNextDirection BREAKS, return DIRN_STOP");
-		printf("\n")
+		printf("\n");
 		return DIRN_STOP;
 	}
 	int diff=currentFloor-nextFloor;
 	if (diff > 0) {
 		printf("getNextDirection returns DIRN_DOWN");
-		printf("\n")
+		printf("\n");
 		return DIRN_DOWN;
 	}
 	else if (diff < 0) {
 		return DIRN_UP;
 		printf("getNextDirection returns DIRN_UP");
-		printf("\n")
+		printf("\n");
 	}
 	else {
 		return DIRN_STOP;
 		printf("getNextDirection returns DIRN_STOP");
-		printf("\n")
+		printf("\n");
 	}
 }
 
 void queue_print (){
-	printf("\n")
+	printf("\n");
 	printf ("FlOOR:\t");
 	for ( int i = 0 ; i < 4 ; i++ ) {
-		printf(i+1);
+		printf("%d",i+1);
 	}
 	
 	printf("UP:\t");
 	for ( int i = 0 ; i < 4 ; i++ ) {
-		printf(queue.upDir[i]);
+		printf("%d",queue.upDir[i]);
 	}
 	printf("\n");
 	
-	printf("DOWN:\t")
+	printf("DOWN:\t");
 	for ( int i = 0 ; i < 4 ; i++ ) {
-		printf(queue.downDir[i]);
+		printf("%d",queue.downDir[i]);
 	}
 	printf("\n");
 	printf("Innside:\t");
 	for ( int i = 0 ; i < 4 ; i++ ) {
-		printf(queue.noDir[i]);
+		printf("%d",queue.noDir[i]);
 	}
 	printf("\n");
-	printf("\n")
+	printf("\n");
 }
