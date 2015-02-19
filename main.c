@@ -3,7 +3,7 @@
 #include "elev.h"
 #include "fsm.h"
 #include "timer.h"
-#include <unistd.h> // for usleep
+//#include <unistd.h> // for usleep
 
 int main (void) {
 	elev_init();
@@ -16,7 +16,7 @@ int main (void) {
 
 		//ORDERBUTTON PRESSED
 		for (int i = 0; i<3; i++){ //Button types (enum)
-			for (int j = 0; j < 4; j++){
+			for (int j = 0; j < N_FLOORS; j++){
 				if ((j<3)&&(i==0)){ //BUTTON_CALL_UP
 					if (elev_get_button_signal((elev_button_type_t)i,j)){
 						fsm_evButton(j,(elev_button_type_t)i);

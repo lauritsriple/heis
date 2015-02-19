@@ -23,7 +23,7 @@ int timer_isTimeout(){
 	}
 	
 	time_t now = time(0);
-	if (now-g_startTime > 3 ){
+	if (now-g_startTime > 2 ){
 		return 1;
 	}
 	else {

@@ -11,8 +11,19 @@ static elev_motor_direction_t currentDirection;
 
 void fsm_init(){
  	queue_init();
+	currentFloor=N_FLOORS+1;
+	currentDirection=DIRN_UP;
 	if(elev_get_floor_sensor_signal()<0){ //If not in floor, go up
 		elev_set_motor_direction(DIRN_UP);
+		while(1){
+			if (elev_get_floor_sensor_signal()!=-1) { //reached first floor
+				elev_set_motor_direction(DIRN_STOP);
+				currentFloor=elev_get_floor_sensor_signal();
+				currentDirection=DIRN_STOP;
+				elev_set_floor_indicator(currentFloor);
+				break;
+			}
+		}
 	}
 }
 
@@ -55,8 +66,16 @@ void fsm_evStopPressed(){
 }
 
 void fsm_evButton(int floor, elev_button_type_t button){
-	queue_add(floor, button);
-	elev_set_button_lamp(button, floor, 1);
+	if (elev_get_floor_sensor_signal()!=floor){
+		elev_set_button_lamp(button, floor, 1);
+		queue_add(floor, button);
+	}
+	else if (elev_get_floor_sensor_signal()==floor || currentDirection==DIRN_STOP){
+		elev_set_door_open_lamp(1);
+		timer_start();
+		return;
+	}
+
 	if (currentDirection==DIRN_STOP) { //if empty queue
                 elev_set_motor_direction(queue_getNextDirection(currentFloor,currentDirection));
 		currentDirection=queue_getNextDirection(currentFloor,currentDirection);
@@ -67,11 +86,7 @@ void fsm_evIsFloor(int floor){
 	if (currentFloor!=floor && floor != -1){
 		printf("is new floor\n");
 		currentFloor=floor;
-
-		//SET ORDER LAMPS 
 		elev_set_floor_indicator(currentFloor);
-
-		
 
 		if (queue_getNextFloor(currentFloor, currentDirection)==currentFloor){
 			printf("is correct floor\n");
