@@ -55,7 +55,6 @@ void fsm_evStopPressed(){
 }
 
 void fsm_evButton(int floor, elev_button_type_t button){
-	printf ("button pressed\n");
 	queue_add(floor, button);
 	elev_set_button_lamp(button, floor, 1);
 	if (currentDirection==DIRN_STOP) { //if empty queue

@@ -25,25 +25,28 @@ void queue_add(int floor, elev_button_type_t button){
 		case BUTTON_CALL_UP:
 			if (queue.upDir[floor] == 0){
 				queue.upDir[floor]=1;
+				printf("QUEUE ADD, int floor = %d, button = %d :\n",floor,button);
+				queue_print();
 			}
 			break;
 
 		case BUTTON_CALL_DOWN:
 			if (queue.downDir[floor] == 0){
 				queue.downDir[floor]=1;
+				printf("QUEUE ADD, int floor = %d, button = %d :\n",floor,button);
+				queue_print();
 			}
 			break;
 
 		case BUTTON_COMMAND:
 			if (queue.noDir[floor] == 0){
 				queue.noDir[floor]=1;
+				printf("QUEUE ADD, int floor = %d, button = %d :\n",floor,button);
+				queue_print();
 			}
 			break;
 	}
 	
-	printf("QUEUE ADD, int floor = %d, button = %d :\n",floor,button);
-	queue_print();
-
 }
 
 void queue_pop(int floor){
@@ -78,44 +81,52 @@ int queue_getNextFloor(int currentFloor, elev_motor_direction_t currentDirection
 		case DIRN_STOP: //i ro
 			for (int i =0; i<N_FLOORS;i++){ //if "i ro", muligens en bestilling.
 				if (queue.upDir[i]){
-					printf("getNextFloor returns %i",i);
+					printf("getNextFloor returns %i UPDIR",i);
 					printf("\n");
+					queue_print();
 					return i;
 				}
 				if (queue.downDir[i]){
-					printf("getNextFloor returns %i",i);
+					printf("getNextFloor returns %i DOWNDIR",i);
 					printf("\n");
+					queue_print();
 					return i;
 				}
 				if (queue.noDir[i]){
-					printf("getNextFloor returns %i",i);
+					printf("getNextFloor returns %i NODIR",i);
 					printf("\n");
+					queue_print();
 					return i;
 				}
 			}
 			printf("getNextFloor returns %i",currentFloor);
+			queue_print();
 			printf("\n");
 			return currentFloor;
 
 		case DIRN_DOWN: // nedover
-			for (int i = currentFloor; i < 0; i--){
+			for (int i = currentFloor; i >= 0; i--){
 				if (queue.downDir[i]==1){
 					printf("getNextFloor returns %i",i);
 					printf("\n");
+					queue_print();
 					return i;
 				}
 			}
 		case DIRN_UP: //oppover
-			for (int i = currentFloor; i < N_FLOORS-1; i++){
+			for (int i = currentFloor; i < N_FLOORS; i++){
 				if (queue.upDir[i]==1){
 					printf("getNextFloor returns %i",i);
+					queue_print();
 					printf("\n");
+					queue_print();
 					return i;
 				}
 			}
 		default:
-			printf("getNextFloor returns DEFAULT = -1");
+			printf("getNextFloor returns EMPTY (DEFAULT = -1");
 			printf("\n");
+			queue_print();
 			return -1;
 	}
 	
@@ -148,18 +159,19 @@ elev_motor_direction_t queue_getNextDirection(int currentFloor, elev_motor_direc
 
 void queue_print (){
 	printf("\n");
-	printf ("FlOOR:\t");
+	printf ("FlOOR:\t\t");
 	for ( int i = 0 ; i < 4 ; i++ ) {
-		printf("%d",i+1);
+		printf("%d",i);
 	}
 	
-	printf("UP:\t");
+	printf("\n");
+	printf("UP:\t\t");
 	for ( int i = 0 ; i < 4 ; i++ ) {
 		printf("%d",queue.upDir[i]);
 	}
 	printf("\n");
 	
-	printf("DOWN:\t");
+	printf("DOWN:\t\t");
 	for ( int i = 0 ; i < 4 ; i++ ) {
 		printf("%d",queue.downDir[i]);
 	}
