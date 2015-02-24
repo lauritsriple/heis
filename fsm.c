@@ -70,16 +70,16 @@ void fsm_evButton(int floor, elev_button_type_t button){
 		elev_set_button_lamp(button, floor, 1);
 		queue_add(floor, button);
 	}
-	else if (elev_get_floor_sensor_signal()==floor || currentDirection==DIRN_STOP){
+	else if (elev_get_floor_sensor_signal()==floor && currentDirection==DIRN_STOP){
 		elev_set_door_open_lamp(1);
 		timer_start();
 		return;
 	}
 
-	if (currentDirection==DIRN_STOP) { //if empty queue
+	/*if (currentDirection==DIRN_STOP) { //if empty queue
                 elev_set_motor_direction(queue_getNextDirection(currentFloor,currentDirection));
 		currentDirection=queue_getNextDirection(currentFloor,currentDirection);
-        }
+        }*/
 }
 
 void fsm_evIsFloor(int floor){

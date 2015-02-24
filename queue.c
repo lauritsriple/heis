@@ -115,7 +115,7 @@ int queue_getNextFloor(int currentFloor, elev_motor_direction_t currentDirection
 			}
 
 			for (int i = 0; i < N_FLOORS; i++){ //start at bottom
-				if (queue.upDir[i] || queue.downDir[i]){ // might be in up list or over current floor
+				if (queue.upDir[i] || queue.downDir[i] || queue.noDir[i]){ // might be in up list or over current floor
 					printf("getNextFloor returns %i",i);
 					queue_print();
 					printf("\n");
@@ -135,7 +135,7 @@ int queue_getNextFloor(int currentFloor, elev_motor_direction_t currentDirection
 			}
 
 			for (int i = N_FLOORS-1; i >= 0; i--){ //Start at top
-                                if (queue.downDir[i] || queue.upDir[i]){ // might be in down list or over under floor
+                                if (queue.downDir[i] || queue.upDir[i] || queue.noDir[i]){ // might be in down list or over under floor
                                         printf("getNextFloor returns %i",i);
                                         queue_print();
                                         printf("\n");
