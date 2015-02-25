@@ -39,7 +39,6 @@ void fsm_init(){
 void fsm_evStopPressed(){
 	elev_set_motor_direction(DIRN_STOP);
 	motorDirection=DIRN_STOP;
-	queueDirection=DIRN_STOP;
 	elev_set_stop_lamp(1);
 
 	//turn off all order lamps
@@ -96,13 +95,32 @@ void fsm_evButton(int floor, elev_button_type_t button){
 		elev_set_button_lamp(button,floor,1);
 		queue_add(floor,button);
 	}
-	
-	//if only one item in queue, and timer not running => Start elevator
+
+	//elevator is idle. Should be one order in queue. Timer should not be running => Start elevator
 	if (queueDirection==DIRN_STOP && timer_isTimeout()==-1) { 
 		queueDirection=queue_getNextDirection(currentFloor,queueDirection);
 		motorDirection=queueDirection;
                 elev_set_motor_direction(queueDirection);
         }
+	//after emergency stop between floors
+	else if (motorDirection==DIRN_STOP && elev_get_floor_sensor_signal()==-1 && queueDirection!=DIRN_STOP) {
+		//elevator over current floor
+		if (queueDirection==DIRN_UP) {
+			if (floor==currentFloor) {
+				currentFloor=floor+1;
+			}
+		}
+		//elevator under current floor
+		else {
+			if (floor==currentFloor) {
+				currentFloor=floor-1;
+			}
+		}
+
+		queueDirection=queue_getNextDirection(currentFloor, queueDirection);
+		motorDirection=queueDirection;
+		elev_set_motor_direction(motorDirection);
+	}
 }
 
 void fsm_evIsFloor(int floor){
