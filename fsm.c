@@ -4,105 +4,131 @@
 #include "queue.h"
 #include "timer.h"
 #include "fsm.h"
-#include <stdio.h> //for printf
 
 static int currentFloor;
-static elev_motor_direction_t currentDirection;
+static elev_motor_direction_t queueDirection; 
+static elev_motor_direction_t motorDirection;
 
 void fsm_init(){
  	queue_init();
-	currentFloor=N_FLOORS+1;
-	currentDirection=DIRN_UP;
-	if(elev_get_floor_sensor_signal()<0){ //If not in floor, go up
+
+	//if not in floor => go up
+	if(elev_get_floor_sensor_signal()==-1){ 
 		elev_set_motor_direction(DIRN_UP);
+		motorDirection=DIRN_UP;
 		while(1){
-			if (elev_get_floor_sensor_signal()!=-1) { //reached first floor
+			if (elev_get_floor_sensor_signal()!=-1) { 
 				elev_set_motor_direction(DIRN_STOP);
+				motorDirection=DIRN_STOP;
 				currentFloor=elev_get_floor_sensor_signal();
-				currentDirection=DIRN_STOP;
+				queueDirection=DIRN_STOP;
 				elev_set_floor_indicator(currentFloor);
 				break;
 			}
 		}
 	}
+	//if in floor
+	else {
+		currentFloor=elev_get_floor_sensor_signal();
+		elev_set_floor_indicator(currentFloor);
+		queueDirection=DIRN_STOP;
+		motorDirection=DIRN_STOP;
+	}
 }
 
 void fsm_evStopPressed(){
-	printf("STOP\n");
 	elev_set_motor_direction(DIRN_STOP);
-	currentDirection=DIRN_STOP;
+	motorDirection=DIRN_STOP;
+	queueDirection=DIRN_STOP;
 	elev_set_stop_lamp(1);
 
-	//Turn off order lamps
-	for (int i = 0 ; i < 3; i++){ //iterator for button types
+	//turn off all order lamps
+	for (int i = 0 ; i < 3; i++){ 
 		for (int j = 0; j<N_FLOORS; j++){
-                	if ((j<N_FLOORS-1)&&(i==0)){ //BUTTON_CALL_UP
-                        	elev_set_button_lamp((elev_button_type_t)i,j,0);
+                	if ((j<N_FLOORS-1)&&(i==BUTTON_CALL_UP)){
+                        	elev_set_button_lamp(i,j,0);
                 	}
-                	if ((j>0)&&(i==1)){ //BUTTON_CALL_DOWN
-                        	elev_set_button_lamp((elev_button_type_t)i,j,0);
+                	if ((j>0)&&(i==BUTTON_CALL_DOWN)){
+                        	elev_set_button_lamp(i,j,0);
                 	}
-                	if (i==2){ //BUTTON_COMMAND
-                        	elev_set_button_lamp((elev_button_type_t)i,j,0);
+                	if (i==BUTTON_COMMAND){ 
+                        	elev_set_button_lamp(i,j,0);
                 	}
         	}
 	}
-
-	if(elev_get_floor_sensor_signal()>0){ //if in floor, open door
+	
+	//if stop in floor
+	if(elev_get_floor_sensor_signal()!=-1){ 
 		elev_set_door_open_lamp(1);
 		while (elev_get_stop_signal()==1){
 			//do nothing
 		}
 		timer_start();
 	}
+
+	//if stop not in floor
 	else {
 		while (elev_get_stop_signal()==1){
-			//Do nothing
+			//do nothing
 		}
 	}
+
 	elev_set_stop_lamp(0);
 	queue_delete();
 
 }
 
 void fsm_evButton(int floor, elev_button_type_t button){
+	//button not pressed in current floor
 	if (elev_get_floor_sensor_signal()!=floor){
 		elev_set_button_lamp(button, floor, 1);
 		queue_add(floor, button);
 	}
-	else if (elev_get_floor_sensor_signal()==floor && currentDirection==DIRN_STOP){
+
+	//button pressed while elevator stopped in floor
+	else if (elev_get_floor_sensor_signal()==floor && motorDirection==DIRN_STOP){
 		elev_set_door_open_lamp(1);
 		timer_start();
-		return;
 	}
-
-	/*if (currentDirection==DIRN_STOP) { //if empty queue
-                elev_set_motor_direction(queue_getNextDirection(currentFloor,currentDirection));
-		currentDirection=queue_getNextDirection(currentFloor,currentDirection);
-        }*/
+	
+	//button pressed while elevator passing floor 
+	else if (elev_get_floor_sensor_signal()==floor && motorDirection!=DIRN_STOP){
+		elev_set_button_lamp(button,floor,1);
+		queue_add(floor,button);
+	}
+	
+	//if only one item in queue, and timer not running => Start elevator
+	if (queueDirection==DIRN_STOP && timer_isTimeout()==-1) { 
+		queueDirection=queue_getNextDirection(currentFloor,queueDirection);
+		motorDirection=queueDirection;
+                elev_set_motor_direction(queueDirection);
+        }
 }
 
 void fsm_evIsFloor(int floor){
+	//new floor
 	if (currentFloor!=floor && floor != -1){
-		printf("is new floor\n");
 		currentFloor=floor;
 		elev_set_floor_indicator(currentFloor);
 
-		if (queue_getNextFloor(currentFloor, currentDirection)==currentFloor){
-			printf("is correct floor\n");
-			elev_set_motor_direction(DIRN_STOP);	//correct floor reached
+		//new floor is correct floor
+		if (queue_getNextFloor(currentFloor, queueDirection)==currentFloor){
+			elev_set_motor_direction(DIRN_STOP);
+			motorDirection=DIRN_STOP;
 			elev_set_door_open_lamp(1);
 			queue_pop(currentFloor);
 			timer_start();
-			for (int i = 0 ; i < 3; i++){ //iterator for button types
-				if ((currentFloor<N_FLOORS-1)&&(i==0)){ //BUTTON_CALL_UP
-					elev_set_button_lamp((elev_button_type_t)i,currentFloor,0);
+
+			//turn off lamps on correct floor
+			for (int i = 0 ; i < 3; i++){ 
+				if ((currentFloor<N_FLOORS-1)&&(i==BUTTON_CALL_UP)){
+					elev_set_button_lamp(i,currentFloor,0);
         	        	}
-		                if ((currentFloor>0)&&(i==1)){ //BUTTON_CALL_DOWN
-					elev_set_button_lamp((elev_button_type_t)i,currentFloor,0);	
+		                if ((currentFloor>0)&&(i==BUTTON_CALL_DOWN)){
+					elev_set_button_lamp(i,currentFloor,0);	
                 		}
-		                if (i==2){ //BUTTON_COMMAND
-					elev_set_button_lamp((elev_button_type_t)i,currentFloor,0);
+		                if (i==BUTTON_COMMAND){ 
+					elev_set_button_lamp(i,currentFloor,0);
                 		}
 			}
 		}
@@ -110,11 +136,11 @@ void fsm_evIsFloor(int floor){
 }
 
 void fsm_evIsTimeout(){
-	printf ("isTimeout\n");
 	timer_stop();
 	elev_set_door_open_lamp(0);
-	currentDirection=queue_getNextDirection(currentFloor, currentDirection);
-	elev_set_motor_direction(currentDirection);
+	queueDirection=queue_getNextDirection(currentFloor, queueDirection);
+	motorDirection=queueDirection;
+	elev_set_motor_direction(queueDirection);
 }
 
 

@@ -3,49 +3,46 @@
 #include "elev.h"
 #include "fsm.h"
 #include "timer.h"
-//#include <unistd.h> // for usleep
 
 int main (void) {
 	elev_init();
 	fsm_init();
 	while(1){
-		// FLOOR REACHED
+		//floor reached
 		if (elev_get_floor_sensor_signal()!=-1){
 			fsm_evIsFloor(elev_get_floor_sensor_signal());
 		}
 
-		//ORDERBUTTON PRESSED
-		for (int i = 0; i<3; i++){ //Button types (enum)
+		//orderbutton pressed
+		for (int i = 0; i<3; i++){
 			for (int j = 0; j < N_FLOORS; j++){
-				if ((j<3)&&(i==0)){ //BUTTON_CALL_UP
-					if (elev_get_button_signal((elev_button_type_t)i,j)){
-						fsm_evButton(j,(elev_button_type_t)i);
+				if ((j<3)&&(i==BUTTON_CALL_UP)){ 
+					if (elev_get_button_signal(i,j)){
+						fsm_evButton(j,i);
 					}
 				}
-				if ((j>0)&&(i==1)){ //BUTTON_CALL_DOWN
-					if (elev_get_button_signal((elev_button_type_t)i,j)){
-                                                fsm_evButton(j,(elev_button_type_t)i);
+				if ((j>0)&&(i==BUTTON_CALL_DOWN)){
+					if (elev_get_button_signal(i,j)){
+                                                fsm_evButton(j,i);
                                         }
 				}
-				if (i==2){ //BUTTON_COMMAND
-					if(elev_get_button_signal((elev_button_type_t)i,j)){
-						fsm_evButton(j,(elev_button_type_t)i);
+				if (i==BUTTON_COMMAND){ 
+					if(elev_get_button_signal(i,j)){
+						fsm_evButton(j,i);
 					}
 				}
 			}
 		}
 
-		//STOPBUTTON PRESSED
+		//stopbutton pressed
 		if (elev_get_stop_signal()){
 			fsm_evStopPressed();
 		}
 
-		//IS TIMEOUT
-		if (timer_isTimeout()){
+		//is timeout
+		if (timer_isTimeout()==1){
 			fsm_evIsTimeout();
 		}
-
-		//usleep(10000);
 	}
 }
 

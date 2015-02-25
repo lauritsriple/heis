@@ -11,5 +11,5 @@ void fsm_evIsTimeout();
 
 #endif
 
-/*** Enf of file ***/
+/*** End of file ***/
 
